@@ -1,3 +1,16 @@
 *~
 *.mcs
 *.mcw
+funclist
+*.p1
+*.pre
+*.as
+*.hex
+*.hxl
+*.lst
+*.map
+*.obj
+*.rlf
+*.sdb
+*.sym
+*.cof
