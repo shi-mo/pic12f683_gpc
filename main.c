@@ -31,10 +31,12 @@ plf_init_osc(void)
 	OSCCONbits.IRCF = PLF_OSC_4MHZ;
 }
 
+#define PLF_ADC_CLK_OSC8 0b001
+
 static void
 plf_init_adc(void)
 {
-	ADCS2 = 0, ADCS1 = 0, ADCS0 = 1; /* ADC clock = osc/8 =-> 2.0us */
+	ANSELbits.ADCS = PLF_ADC_CLK_OSC8;
 	ADFM  = 1; /* Use right padding for ADC result */
 	ADON  = 1; /* Enable ADC */
 	VCFG  = 0; /* Use Vdd as Vref */
