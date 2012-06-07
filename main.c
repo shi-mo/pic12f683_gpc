@@ -99,7 +99,7 @@ plf_adc_read(void)
 	while (ADCON0bits.GO_DONE) {
 		/* LOOP: wait for conversion complete */
 	}
-	return PLF_ADC_VAL_ADRESH & ADRESL;
+	return PLF_ADC_VAL_ADRESH + ADRESL;
 }
 
 static void
