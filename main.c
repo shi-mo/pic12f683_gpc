@@ -13,7 +13,6 @@ __CONFIG( \
 	& MCLRE_OFF \	/* Disable master clear reset */
 );
 
-#define PLF_ADC_MAX (512 - 1)
 #define PLF_REG_PWM_DUTY CCPR1L
 
 static void
@@ -29,6 +28,18 @@ plf_init_osc(void)
 {
 	OSCCON = 0;
 	OSCCONbits.IRCF = PLF_OSC_4MHZ;
+}
+
+#define PLF_ADC_MAX (512 - 1)
+static void
+plf_init_pwm(void)
+{
+	PR2	= PLF_ADC_MAX;	/* PWM period */
+	CCPR1L 	= 0;		/* PWM duty */
+	CCP1CON	= 0;
+	CCP1M3	= 1, CCP1M2 = 1; /* PWM mode */
+	TMR2ON	= 0; /* Stop TMR2 until all settings are done */
+	T2CKPS1 = 1; /* TMR2 prescale rate 1:16 */
 }
 
 static void
@@ -49,12 +60,7 @@ plf_init(void)
 	VCFG  = 0; /* Use Vdd as Vref */
 	CHS1  = 1, CHS0 = 1; /* Use ch.3 (AN3) */
 
-	PR2	= PLF_ADC_MAX;	/* PWM period */
-	CCPR1L 	= 0;		/* PWM duty */
-	CCP1CON	= 0;
-	CCP1M3	= 1, CCP1M2 = 1; /* PWM mode */
-	TMR2ON	= 0; /* Stop TMR2 until all settings are done */
-	T2CKPS1 = 1; /* TMR2 prescale rate 1:16 */
+	plf_init_pwm();
 }
 
 static void
