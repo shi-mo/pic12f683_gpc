@@ -40,6 +40,15 @@ plf_init_adc(void)
 	VCFG  = 0; /* Use Vdd as Vref */
 }
 
+static void
+plf_init_an3_input(void)
+{
+	TRISIO4	= 1; /* Use GP4 as input */
+	ANSEL = 0;
+	ANS3  = 1; /* Use AN3(GP4) as analog input */
+	CHS1  = 1, CHS0 = 1; /* Use ch.3 (AN3) */
+}
+
 #define PLF_PWM_DUTY_UPPER(duty) (((duty) >> 8) & 0b11)
 #define PLF_PWM_DUTY_LOWER(duty) ((duty) & 0xFF)
 
@@ -76,12 +85,7 @@ plf_init(void)
 	CM2 = 1, CM1 = 1, CM0 = 1; /* Disable comparator */
 
 	plf_init_adc();
-
-	TRISIO4	= 1; /* Use GP4 as input */
-	ANSEL = 0;
-	ANS3  = 1; /* Use AN3(GP4) as analog input */
-	CHS1  = 1, CHS0 = 1; /* Use ch.3 (AN3) */
-
+	plf_init_an3_input();
 	plf_init_pwm();
 }
 
