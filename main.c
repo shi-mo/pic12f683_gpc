@@ -23,6 +23,7 @@ plf_clear_io(void)
 }
 
 #define PLF_OSC_4MHZ 0b110
+
 static void
 plf_init_osc(void)
 {
