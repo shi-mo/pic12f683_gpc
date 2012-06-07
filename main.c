@@ -14,8 +14,7 @@ __CONFIG( \
 );
 
 #define PLF_ADC_MAX (512 - 1)
-#define PLF_PWM_DUTY CCPR1L
-
+#define PLF_REG_PWM_DUTY CCPR1L
 
 static void
 plf_clear_io(void)
@@ -94,6 +93,6 @@ main(int argc, char *argv[])
 
 		adc_val = plf_adc_read();
 		plf_truncate_adc_val(&adc_val);
-		PLF_PWM_DUTY = adc_val;
+		PLF_REG_PWM_DUTY = adc_val;
 	}
 }
