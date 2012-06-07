@@ -56,25 +56,16 @@ plf_init_an3_input(void)
 	CHS1  = 1, CHS0 = 1; /* Use ch.3 (AN3) */
 }
 
-#define PLF_PWM_DUTY_UPPER(duty) (((duty) >> 8) & 0b11)
-#define PLF_PWM_DUTY_LOWER(duty) ((duty) & 0xFF)
-
-static void
-plf_pwm_set_duty(unsigned long duty)
-{
-	CCP1CONbits.DC1B = PLF_PWM_DUTY_UPPER(duty);
-	CCPR1L		 = PLF_PWM_DUTY_LOWER(duty);
-}
-
-#define PLF_ADC_MAX (512 - 1)
+#define PLF_PWM_PERIOD		0x100
+#define PLF_REG_PWM_DUTY	CCPR1L
 #define PLF_TMR2_PRESCALE_X1	0b00
 #define PLF_TMR2_PRESCALE_X16	0b11
 
 static void
 plf_init_pwm(void)
 {
-	PR2	= PLF_ADC_MAX;	/* PWM period */
-	plf_pwm_set_duty(0);
+	PR2 = PLF_PWM_PERIOD - 1;
+	PLF_REG_PWM_DUTY = 0;
 
 	CCP1CON	= 0;
 	CCP1M3	= 1, CCP1M2 = 1; /* PWM mode */
@@ -111,14 +102,20 @@ plf_adc_read(void)
 	return PLF_ADC_VAL_ADRESH + ADRESL;
 }
 
-static void
-plf_truncate_adc_val(unsigned long *valp)
+#define PLF_ADC_RESOLUTION 0x400
+
+static unsigned char
+plf_pwm_get_duty_from(unsigned long adc_val)
 {
-	if (*valp <= PLF_ADC_MAX) {
-		/* Do nothing */
-		return;
+	double rate = 0.0;
+	unsigned char duty = 0;
+
+	rate = (1.0 + adc_val) / PLF_ADC_RESOLUTION;
+	duty = rate * PLF_PWM_PERIOD;
+	if (1 < duty) {
+		duty--;
 	}
-	*valp = PLF_ADC_MAX;
+	return duty;
 }
 
 int
@@ -128,10 +125,11 @@ main(int argc, char *argv[])
 
 	plf_timer_start();
 	while (1) {
-		unsigned long adc_val = 0;
+		unsigned long adc_val	= 0;
+		unsigned char duty	= 0;
 
-		adc_val = plf_adc_read();
-		plf_truncate_adc_val(&adc_val);
-		plf_pwm_set_duty(adc_val);
+		adc_val	= plf_adc_read();
+		duty	= plf_pwm_get_duty_from(adc_val);
+		PLF_REG_PWM_DUTY = duty;
 	}
 }
