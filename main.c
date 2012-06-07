@@ -38,7 +38,7 @@ static void
 plf_init_pwm(void)
 {
 	PR2	= PLF_ADC_MAX;	/* PWM period */
-	CCPR1L 	= 0;		/* PWM duty */
+	PLF_REG_PWM_DUTY = 0;
 	CCP1CON	= 0;
 	CCP1M3	= 1, CCP1M2 = 1; /* PWM mode */
 	TMR2ON	= 0; /* Stop TMR2 until all settings are done */
