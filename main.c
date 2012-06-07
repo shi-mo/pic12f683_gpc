@@ -51,7 +51,8 @@ plf_pwm_set_duty(unsigned long duty)
 }
 
 #define PLF_ADC_MAX (512 - 1)
-#define PLF_TMR2_PRESCALE_X16 0b11
+#define PLF_TMR2_PRESCALE_X1	0b00
+#define PLF_TMR2_PRESCALE_X16	0b11
 
 static void
 plf_init_pwm(void)
@@ -62,7 +63,7 @@ plf_init_pwm(void)
 	CCP1CON	= 0;
 	CCP1M3	= 1, CCP1M2 = 1; /* PWM mode */
 	TMR2ON	= 0; /* Stop TMR2 until all settings are done */
-	T2CONbits.T2CKPS = PLF_TMR2_PRESCALE_X16;
+	T2CONbits.T2CKPS = PLF_TMR2_PRESCALE_X1;
 }
 
 static void
