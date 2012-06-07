@@ -23,11 +23,12 @@ plf_clear_io(void)
 	TRISIO	= 0;
 }
 
+#define PLF_OSC_4MHZ 0b110
 static void
 plf_init_osc(void)
 {
 	OSCCON = 0;
-	IRCF2 = 1, IRCF1 = 1, IRCF0 = 0; /* 4MHz oscillation (default) */
+	OSCCONbits.IRCF = PLF_OSC_4MHZ;
 }
 
 static void
