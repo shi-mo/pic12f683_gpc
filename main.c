@@ -13,8 +13,6 @@ __CONFIG( \
 	& MCLRE_OFF \	/* Disable master clear reset */
 );
 
-#define PLF_REG_PWM_DUTY CCPR1L
-
 static void
 plf_init_clear_io(void)
 {
@@ -42,6 +40,16 @@ plf_init_adc(void)
 	VCFG  = 0; /* Use Vdd as Vref */
 }
 
+#define PLF_PWM_DUTY_UPPER(duty) (((duty) >> 8) & 0b11)
+#define PLF_PWM_DUTY_LOWER(duty) ((duty) & 0xFF)
+
+static void
+plf_pwm_set_duty(unsigned long duty)
+{
+	CCP1CONbits.DC1B = PLF_PWM_DUTY_UPPER(duty);
+	CCPR1L		 = PLF_PWM_DUTY_LOWER(duty);
+}
+
 #define PLF_ADC_MAX (512 - 1)
 #define PLF_TMR2_PRESCALE_X16 0b11
 
@@ -49,7 +57,8 @@ static void
 plf_init_pwm(void)
 {
 	PR2	= PLF_ADC_MAX;	/* PWM period */
-	PLF_REG_PWM_DUTY = 0;
+	plf_pwm_set_duty(0);
+
 	CCP1CON	= 0;
 	CCP1M3	= 1, CCP1M2 = 1; /* PWM mode */
 	TMR2ON	= 0; /* Stop TMR2 until all settings are done */
@@ -81,18 +90,20 @@ plf_timer_start(void)
 	TMR2ON = 1;
 }
 
-static unsigned int
+#define PLF_ADC_VAL_ADRESH ((ADRESH & 0b11) << 8)
+
+static unsigned long
 plf_adc_read(void)
 {
 	ADCON0bits.GO_DONE = 1;
 	while (ADCON0bits.GO_DONE) {
 		/* LOOP: wait for conversion complete */
 	}
-	return (ADRESH<<6) & ADRESL;
+	return PLF_ADC_VAL_ADRESH & ADRESL;
 }
 
 static void
-plf_truncate_adc_val(unsigned int *valp)
+plf_truncate_adc_val(unsigned long *valp)
 {
 	if (*valp <= PLF_ADC_MAX) {
 		/* Do nothing */
@@ -108,10 +119,10 @@ main(int argc, char *argv[])
 
 	plf_timer_start();
 	while (1) {
-		unsigned int adc_val = 0;
+		unsigned long adc_val = 0;
 
 		adc_val = plf_adc_read();
 		plf_truncate_adc_val(&adc_val);
-		PLF_REG_PWM_DUTY = adc_val;
+		plf_pwm_set_duty(adc_val);
 	}
 }
