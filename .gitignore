@@ -15,3 +15,5 @@ funclist
 *.sdb
 *.sym
 *.cof
+build
+nbproject

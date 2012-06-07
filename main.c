@@ -7,10 +7,10 @@
 #include <htc.h>
 
 __CONFIG( \
-	INTIO \		/* Use internal oscillator without CLKOUT */
-	& PROTECT \	/* Protect program code */
-	& WDTDIS \	/* Disable watch dog timer */
-	& MCLRDIS \	/* Disable master clear reset */
+	FOSC_INTOSCIO \	/* Use internal oscillator without CLKOUT */
+	& CP_ON \	/* Protect program code */
+	& WDTE_OFF \	/* Disable watch dog timer */
+	& MCLRE_OFF \	/* Disable master clear reset */
 );
 
 #define PLF_ADC_MAX (512 - 1)
@@ -54,8 +54,8 @@ plf_timer_start(void)
 static unsigned int
 plf_adc_read(void)
 {
-	GODONE = 1;
-	while (GODONE) {
+	ADCON0bits.GO_DONE = 1;
+	while (ADCON0bits.GO_DONE) {
 		/* LOOP: wait for conversion complete */
 	}
 	return (ADRESH<<6) & ADRESL;
