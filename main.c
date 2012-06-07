@@ -16,7 +16,7 @@ __CONFIG( \
 #define PLF_REG_PWM_DUTY CCPR1L
 
 static void
-plf_clear_io(void)
+plf_init_clear_io(void)
 {
 	GPIO = 0;
 	TRISIO	= 0;
@@ -48,7 +48,7 @@ plf_init_pwm(void)
 static void
 plf_init(void)
 {
-	plf_clear_io();
+	plf_init_clear_io();
 	plf_init_osc();
 
 	CMCON0	= 0;
