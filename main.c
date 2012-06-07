@@ -31,6 +31,15 @@ plf_init_osc(void)
 	OSCCONbits.IRCF = PLF_OSC_4MHZ;
 }
 
+static void
+plf_init_adc(void)
+{
+	ADCS2 = 0, ADCS1 = 0, ADCS0 = 1; /* ADC clock = osc/8 =-> 2.0us */
+	ADFM  = 1; /* Use right padding for ADC result */
+	ADON  = 1; /* Enable ADC */
+	VCFG  = 0; /* Use Vdd as Vref */
+}
+
 #define PLF_ADC_MAX (512 - 1)
 #define PLF_TMR2_PRESCALE_X16 0b11
 
@@ -54,13 +63,11 @@ plf_init(void)
 	CMCON0	= 0;
 	CM2 = 1, CM1 = 1, CM0 = 1; /* Disable comparator */
 
+	plf_init_adc();
+
 	TRISIO4	= 1; /* Use GP4 as input */
 	ANSEL = 0;
 	ANS3  = 1; /* Use AN3(GP4) as analog input */
-	ADCS2 = 0, ADCS1 = 0, ADCS0 = 1; /* ADC clock = osc/8 =-> 2.0us */
-	ADFM  = 1; /* Use right padding for ADC result */
-	ADON  = 1; /* Enable ADC */
-	VCFG  = 0; /* Use Vdd as Vref */
 	CHS1  = 1, CHS0 = 1; /* Use ch.3 (AN3) */
 
 	plf_init_pwm();
