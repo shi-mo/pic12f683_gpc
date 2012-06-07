@@ -31,6 +31,8 @@ plf_init_osc(void)
 }
 
 #define PLF_ADC_MAX (512 - 1)
+#define PLF_TMR2_PRESCALE_X16 0b11
+
 static void
 plf_init_pwm(void)
 {
@@ -39,7 +41,7 @@ plf_init_pwm(void)
 	CCP1CON	= 0;
 	CCP1M3	= 1, CCP1M2 = 1; /* PWM mode */
 	TMR2ON	= 0; /* Stop TMR2 until all settings are done */
-	T2CKPS1 = 1; /* TMR2 prescale rate 1:16 */
+	T2CONbits.T2CKPS = PLF_TMR2_PRESCALE_X16;
 }
 
 static void
