@@ -16,15 +16,27 @@ __CONFIG( \
 #define PLF_ADC_MAX (512 - 1)
 #define PLF_PWM_DUTY CCPR1L
 
+
+static void
+plf_clear_io(void)
+{
+	GPIO = 0;
+	TRISIO	= 0;
+}
+
+static void
+plf_init_osc(void)
+{
+	OSCCON = 0;
+	IRCF2 = 1, IRCF1 = 1, IRCF0 = 0; /* 4MHz oscillation (default) */
+}
+
 static void
 plf_init(void)
 {
-	GPIO = 0; /* first, set all output as Low */
+	plf_clear_io();
+	plf_init_osc();
 
-	OSCCON = 0;
-	IRCF2 = 1, IRCF1 = 1, IRCF0 = 0; /* 4MHz oscillation (default) */
-
-	TRISIO	= 0;
 	CMCON0	= 0;
 	CM2 = 1, CM1 = 1, CM0 = 1; /* Disable comparator */
 
