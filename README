@@ -1,0 +1,25 @@
+= PIC12F683 PWM LED Flasher
+
+== Target device
+see circuit_diagram.png .
+
+You can change the LED lighting intensity (PWM duty) by rotating the VR.
+
+== Program
+see main.c .
+
+=== Abstract
+1. Get the AN3 value via ADC.
+2. Determine the rate to the ADC resolution.
+3. Circuit specific correction.
+4. Update the PWM duty.
+
+== Compiler
+use MPLAB XC8.
+
+== ATTENTION
+This program is provided WITHOUT ANY WARRANTY. Use it at your own risk.
+
+== License
+Author: shi-mo <yoshifumi.shimono@gmail.com>
+License: MIT License
