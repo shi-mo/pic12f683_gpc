@@ -103,16 +103,21 @@ plf_adc_read(void)
 	return PLF_ADC_VAL_ADRESH + ADRESL;
 }
 
-#define PLF_ADC_RESOLUTION 0x400
+#define PLF_ADC_RESOLUTION	0x400
+
+static double
+plf_adc_get_rate_from(unsigned long adc_val)
+{
+	double rate = (1.0 + adc_val) / PLF_ADC_RESOLUTION;
+	return rate;
+}
 
 static unsigned char
-plf_pwm_get_duty_from(unsigned long adc_val)
+plf_pwm_get_duty_from(double rate)
 {
-	double rate = 0.0;
 	unsigned char duty = 0;
 
-	rate = (1.0 + adc_val) / PLF_ADC_RESOLUTION;
-	duty = rate * PLF_PWM_PERIOD;
+	duty = (unsigned char)(rate * PLF_PWM_PERIOD);
 	if (1 < duty) {
 		duty--;
 	}
@@ -126,11 +131,13 @@ main(int argc, char *argv[])
 
 	plf_timer_start();
 	while (1) {
-		unsigned long adc_val	= 0;
-		unsigned char duty	= 0;
+		unsigned long	adc_val	= 0;
+		double		rate	= 0;
+		unsigned char	duty	= 0;
 
 		adc_val	= plf_adc_read();
-		duty	= plf_pwm_get_duty_from(adc_val);
+		rate	= plf_adc_get_rate_from(adc_val);
+		duty	= plf_pwm_get_duty_from(rate);
 		PLF_REG_PWM_DUTY = duty;
 	}
 }
