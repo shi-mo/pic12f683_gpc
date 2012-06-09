@@ -56,7 +56,7 @@ plf_init_an3_input(void)
 	CHS1  = 1, CHS0 = 1; /* Use ch.3 (AN3) */
 }
 
-#define PLF_PWM_PERIOD		0x100
+#define PLF_PWM_PERIOD		0xFF
 #define PLF_REG_PWM_DUTY	CCPR1L
 #define PLF_CCP_MODE_PWM	0b1100
 #define PLF_TMR2_PRESCALE_X1	0b00
@@ -65,7 +65,7 @@ plf_init_an3_input(void)
 static void
 plf_init_pwm(void)
 {
-	PR2 = PLF_PWM_PERIOD - 1;
+	PR2 = PLF_PWM_PERIOD;
 	PLF_REG_PWM_DUTY = 0;
 
 	CCP1CON	= 0;
@@ -103,25 +103,41 @@ plf_adc_read(void)
 	return PLF_ADC_VAL_ADRESH + ADRESL;
 }
 
-#define PLF_ADC_RESOLUTION	0x400
+#define PLF_ADC_VAL_MAX	0x3FF
 
 static double
 plf_adc_get_rate_from(unsigned long adc_val)
 {
-	double rate = (1.0 + adc_val) / PLF_ADC_RESOLUTION;
-	return rate;
+	return (double)adc_val / PLF_ADC_VAL_MAX;
+}
+
+#define PLF_ADC_CORRECTION_THREASHOLD_LOWER	0.05
+#define PLF_ADC_CORRECTION_THREASHOLD_HIGHER	0.95
+
+static double
+plf_adc_correct_for_the_board(double rate)
+{
+	double corrected_rate = 0;
+
+	if (rate < 0) {
+		/* must not happen */
+		return 0;
+	}
+
+	corrected_rate = rate * 2;
+	if (corrected_rate <= PLF_ADC_CORRECTION_THREASHOLD_LOWER) {
+		return 0.0;
+	}
+	if (PLF_ADC_CORRECTION_THREASHOLD_HIGHER <= corrected_rate) {
+		return 1.0;
+	}
+	return corrected_rate;
 }
 
 static unsigned char
 plf_pwm_get_duty_from(double rate)
 {
-	unsigned char duty = 0;
-
-	duty = (unsigned char)(rate * PLF_PWM_PERIOD);
-	if (1 < duty) {
-		duty--;
-	}
-	return duty;
+	return (unsigned char)(rate * PLF_PWM_PERIOD);
 }
 
 int
@@ -137,6 +153,7 @@ main(int argc, char *argv[])
 
 		adc_val	= plf_adc_read();
 		rate	= plf_adc_get_rate_from(adc_val);
+		rate	= plf_adc_correct_for_the_board(rate);
 		duty	= plf_pwm_get_duty_from(rate);
 		PLF_REG_PWM_DUTY = duty;
 	}
