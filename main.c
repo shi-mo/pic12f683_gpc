@@ -134,12 +134,6 @@ plf_adc_correct_for_the_board(double rate)
 	return corrected_rate;
 }
 
-static unsigned char
-plf_pwm_get_duty_from(double rate)
-{
-	return (unsigned char)(rate * PLF_PWM_PERIOD);
-}
-
 int
 main(int argc, char *argv[])
 {
@@ -149,12 +143,10 @@ main(int argc, char *argv[])
 	while (1) {
 		unsigned long	adc_val	= 0;
 		double		rate	= 0;
-		unsigned char	duty	= 0;
 
 		adc_val	= plf_adc_read();
 		rate	= plf_adc_get_rate_from(adc_val);
 		rate	= plf_adc_correct_for_the_board(rate);
-		duty	= plf_pwm_get_duty_from(rate);
-		PLF_REG_PWM_DUTY = duty;
+		PLF_REG_PWM_DUTY = (unsigned char)(rate * PLF_PWM_PERIOD);
 	}
 }
