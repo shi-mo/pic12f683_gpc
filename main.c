@@ -58,6 +58,7 @@ plf_init_an3_input(void)
 
 #define PLF_PWM_PERIOD		0x100
 #define PLF_REG_PWM_DUTY	CCPR1L
+#define PLF_CCP_MODE_PWM	0b1100
 #define PLF_TMR2_PRESCALE_X1	0b00
 #define PLF_TMR2_PRESCALE_X16	0b11
 
@@ -68,8 +69,8 @@ plf_init_pwm(void)
 	PLF_REG_PWM_DUTY = 0;
 
 	CCP1CON	= 0;
-	CCP1M3	= 1, CCP1M2 = 1; /* PWM mode */
-	TMR2ON	= 0; /* Stop TMR2 until all settings are done */
+	CCP1CONbits.CCP1M = PLF_CCP_MODE_PWM;
+	TMR2ON = 0; /* Stop TMR2 until all settings are done */
 	T2CONbits.T2CKPS = PLF_TMR2_PRESCALE_X1;
 }
 
