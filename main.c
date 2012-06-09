@@ -29,11 +29,13 @@ plf_init_osc(void)
 	OSCCONbits.IRCF = PLF_OSC_4MHZ;
 }
 
+#define PLF_CM_DISABLE 0b111
+
 static void
 plf_init_cm(void)
 {
 	CMCON0	= 0;
-	CM2 = 1, CM1 = 1, CM0 = 1; /* Disable comparator */
+	CMCON0bits.CM = PLF_CM_DISABLE;
 }
 
 #define PLF_ADC_CLK_OSC8 0b001
