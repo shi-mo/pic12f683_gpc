@@ -111,8 +111,8 @@ plf_adc_get_rate_from(unsigned long adc_val)
 	return (double)adc_val / PLF_ADC_VAL_MAX;
 }
 
-#define PLF_ADC_CORRECTION_THREASHOLD_LOWER	0.05
-#define PLF_ADC_CORRECTION_THREASHOLD_HIGHER	0.95
+#define PLF_ADC_CORRECTION_THREASHOLD_LOWER	0.03
+#define PLF_ADC_CORRECTION_THREASHOLD_HIGHER	0.97
 
 static double
 plf_adc_correct_for_the_board(double rate)
