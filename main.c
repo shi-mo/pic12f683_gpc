@@ -136,6 +136,19 @@ plf_adc_correct_for_the_board(double rate)
 	return corrected_rate;
 }
 
+static void
+plf_update(void)
+{
+	unsigned long	adc_val	= 0;
+	double		rate	= 0;
+
+	adc_val	= plf_adc_read();
+	rate	= plf_adc_get_rate_from(adc_val);
+	rate	= plf_adc_correct_for_the_board(rate);
+
+	PLF_REG_PWM_DUTY = (unsigned char)(rate * PLF_PWM_PERIOD);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -143,12 +156,6 @@ main(int argc, char *argv[])
 
 	plf_timer_start();
 	while (1) {
-		unsigned long	adc_val	= 0;
-		double		rate	= 0;
-
-		adc_val	= plf_adc_read();
-		rate	= plf_adc_get_rate_from(adc_val);
-		rate	= plf_adc_correct_for_the_board(rate);
-		PLF_REG_PWM_DUTY = (unsigned char)(rate * PLF_PWM_PERIOD);
+		plf_update();
 	}
 }
