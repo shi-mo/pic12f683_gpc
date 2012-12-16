@@ -13,17 +13,17 @@
 #define PLF_OSC_4MHZ    0b110
 #define PLF_OSC_8MHZ    0b111
 
-#define PLF_CONF_OSC    PLF_OSC_1MHZ
+#define PLF_CONF_OSC    PLF_OSC_4MHZ
 
 /* Prescaler */
 #define PLF_TMR2_PRESCALE_X1	0b00
 #define PLF_TMR2_PRESCALE_X4	0b01
 #define PLF_TMR2_PRESCALE_X16	0b11
 
-#define PLF_CONF_PRESCALE   PLF_TMR2_PRESCALE_X16
+#define PLF_CONF_PRESCALE   PLF_TMR2_PRESCALE_X1
 
 /* PWM */
-#define PLF_CONF_PR2    0x001F
+#define PLF_CONF_PR2    0xFF
 
 #endif	/* PLF_CONF_H */
 
