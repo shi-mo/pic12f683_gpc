@@ -23,7 +23,7 @@
 #define PLF_CONF_PRESCALE   PLF_TMR2_PRESCALE_X16
 
 /* PWM */
-#define PLF_CONF_PR2    0x20
+#define PLF_CONF_PR2    0x001F
 
 #endif	/* PLF_CONF_H */
 
