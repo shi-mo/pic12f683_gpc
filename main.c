@@ -5,6 +5,7 @@
  * Target device: PIC12F683
  */
 #include <htc.h>
+#include "plf_conf.h"
 
 __CONFIG( \
 	FOSC_INTOSCIO \	/* Use internal oscillator without CLKOUT */
@@ -20,13 +21,11 @@ plf_init_clear_io(void)
 	TRISIO	= 0;
 }
 
-#define PLF_OSC_4MHZ 0b110
-
 static void
 plf_init_osc(void)
 {
 	OSCCON = 0;
-	OSCCONbits.IRCF = PLF_OSC_4MHZ;
+	OSCCONbits.IRCF = PLF_CONF_OSC;
 }
 
 #define PLF_CM_DISABLE 0b111
@@ -58,22 +57,19 @@ plf_init_an3_input(void)
 	CHS1  = 1, CHS0 = 1; /* Use ch.3 (AN3) */
 }
 
-#define PLF_PWM_PERIOD		0xFF
-#define PLF_REG_PWM_DUTY	CCPR1L
+#define PLF_REG_PWM_WIDTH	CCPR1L
 #define PLF_CCP_MODE_PWM	0b1100
-#define PLF_TMR2_PRESCALE_X1	0b00
-#define PLF_TMR2_PRESCALE_X16	0b11
 
 static void
 plf_init_pwm(void)
 {
-	PR2 = PLF_PWM_PERIOD;
-	PLF_REG_PWM_DUTY = 0;
+	PR2 = PLF_CONF_PR2;
+	PLF_REG_PWM_WIDTH = 0;
 
 	CCP1CON	= 0;
 	CCP1CONbits.CCP1M = PLF_CCP_MODE_PWM;
 	TMR2ON = 0; /* Stop TMR2 until all settings are done */
-	T2CONbits.T2CKPS = PLF_TMR2_PRESCALE_X1;
+	T2CONbits.T2CKPS = PLF_CONF_PRESCALE;
 }
 
 static void
@@ -146,7 +142,7 @@ plf_update(void)
 	rate	= plf_adc_get_rate_from(adc_val);
 	rate	= plf_adc_correct_for_the_board(rate);
 
-	PLF_REG_PWM_DUTY = (unsigned char)(rate * PLF_PWM_PERIOD);
+	PLF_REG_PWM_WIDTH = (unsigned char)(rate * PLF_CONF_PR2);
 }
 
 int
