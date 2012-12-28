@@ -109,27 +109,26 @@ plf_adc_get_rate_from(unsigned long adc_val)
 	return (double)adc_val / PLF_ADC_VAL_MAX;
 }
 
-#define PLF_ADC_CORRECTION_THREASHOLD_LOWER	0.03
-#define PLF_ADC_CORRECTION_THREASHOLD_HIGHER	0.97
+#define PLF_RATE_LIMIT_LOWER	0.03
+#define PLF_RATE_LIMIT_HIGHER	0.97
 
 static double
-plf_adc_correct_for_the_board(double rate)
+plf_rate_correct(double rate)
 {
-	double corrected_rate = 0;
+	double corrected = 0;
 
 	if (rate < 0) {
 		/* must not happen */
 		return 0;
 	}
 
-	corrected_rate = rate * 2;
-	if (corrected_rate <= PLF_ADC_CORRECTION_THREASHOLD_LOWER) {
+	if (corrected <= PLF_RATE_LIMIT_LOWER) {
 		return 0.0;
 	}
-	if (PLF_ADC_CORRECTION_THREASHOLD_HIGHER <= corrected_rate) {
+	if (PLF_RATE_LIMIT_HIGHER <= corrected) {
 		return 1.0;
 	}
-	return corrected_rate;
+	return corrected;
 }
 
 static void
@@ -140,7 +139,7 @@ plf_update(void)
 
 	adc_val	= plf_adc_read();
 	rate	= plf_adc_get_rate_from(adc_val);
-	rate	= plf_adc_correct_for_the_board(rate);
+	rate	= plf_rate_correct(rate);
 
 	PLF_REG_PWM_WIDTH = (unsigned char)(rate * PLF_CONF_PR2);
 }
