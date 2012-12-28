@@ -1,9 +1,9 @@
-= PIC12F683 PWM LED Flasher
+= PIC12F683 General purpose PWM Controller
 
 == Target device
 see circuit_diagram.png .
 
-You can change the LED lighting intensity (PWM duty) by rotating the VR.
+You can change the PWM duty by rotating the VR.
 
 == Program
 see main.c .
