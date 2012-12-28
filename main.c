@@ -115,20 +115,18 @@ gpc_adc_get_rate_from(unsigned long adc_val)
 static double
 gpc_rate_correct(double rate)
 {
-	double corrected = 0;
-
 	if (rate < 0) {
 		/* must not happen */
 		return 0;
 	}
 
-	if (corrected <= GPC_RATE_LIMIT_LOWER) {
+	if (rate <= GPC_RATE_LIMIT_LOWER) {
 		return 0.0;
 	}
-	if (GPC_RATE_LIMIT_HIGHER <= corrected) {
+	if (GPC_RATE_LIMIT_HIGHER <= rate) {
 		return 1.0;
 	}
-	return corrected;
+	return rate;
 }
 
 static void
